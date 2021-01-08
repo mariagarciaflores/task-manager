@@ -10,9 +10,9 @@ Durante este tutorial vamos a utilizar Angular CLI, local storage y vamos a depl
 
 Al finalizar este tutorial tendrás tu propia aplicación de administrador de tareas que mostrará una lista de tareas y te permitirá añadir, completar, editar y eliminar una tarea. La lista de tareas será almacenada en el local storage del navegador de esta amnera todos los cambios que realices se mantendrán incluso cuando refresques la página (siempre que uses el mismo navegador en la misma computadora y no en modo incógnito).
 
-Hecha un vistazo a lo que lograrás al completar este tutorial [Demo](https://tw-task-manager.web.app).
+Hecha un vistazo a lo que lograrás al completar este tutorial [Demo](https://tw-task-manager.web.app)(:target="_blank").
 
-![Imagen de la aplicación](/assets/todo-list-app.PNG)(:target="_blank")
+![Imagen de la aplicación](/src/assets/todo-list-app.PNG)
 
 En este tutorial aprenderás conceptos básicos e importantes de Angular, después te animamos a continuar desarrollando y añadiendo muchas más mejoras y características de usabilidad a tu propio administrador de tareas (dale tu toque).
 
