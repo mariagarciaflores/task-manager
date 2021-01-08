@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
   selector: 'tm-input-button',
@@ -6,6 +6,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./input-button.component.css'],
 })
 export class InputButtonComponent implements OnInit {
+  @ViewChild('inputId') input: ElementRef;
   @Output() save: EventEmitter<string> = new EventEmitter();
   title = '';
 
@@ -15,5 +16,6 @@ export class InputButtonComponent implements OnInit {
 
   saveValue(newTitle: string): void {
     this.save.emit(newTitle);
+    this.input.nativeElement.value = '';
   }
 }
