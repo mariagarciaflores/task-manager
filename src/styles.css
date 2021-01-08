@@ -1,1 +1,173 @@
 /* You can add global styles to this file, and also import other style files */
+html,
+body,
+div,
+span,
+h1,
+p,
+ul,
+li {
+  padding: 0;
+  border: 0;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+body {
+  background: #ffbc47;
+  font-size: 16px;
+  line-height: 22px;
+  color: #404040;
+  font-family: monospace;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+.btn {
+  background: #559c57;
+  color: #fff;
+  padding: 3px 14px;
+  margin: 0 0 0 3px;
+  border: none;
+  border-radius: 5px;
+  font-size: 12px;
+  line-height: 24px;
+  cursor: pointer;
+  vertical-align: bottom;
+  font-family: monospace;
+  float: right;
+}
+
+.btn:hover {
+  background: lightslategrey;
+}
+
+.btn-red {
+  background: red;
+}
+
+.btn-red:hover {
+  background: darkred;
+}
+
+.app-title {
+  font-size: 52px;
+  line-height: 52px;
+  margin-bottom: 30px;
+  font-weight: bold;
+  text-align: center;
+  color: #80092c;
+}
+
+.todo-input {
+  padding: 4px 10px 4px;
+  font-size: 16px;
+  font-family: monospace;
+  line-height: 20px;
+  border: solid 1px #dddddd;
+  border-radius: 5px;
+  flex-grow: 1;
+  width: 70%;
+}
+
+.todo-input:focus,
+.todo-input:visited {
+  outline-color: #ffbc47;
+}
+
+:host(:not([hidden])) {
+  display: flex;
+  justify-content: space-between;
+  flex-grow: 1;
+}
+
+.todo-input::-webkit-input-placeholder {
+  font-style: italic;
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.todo-input::-moz-placeholder {
+  font-style: italic;
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.todo-input::input-placeholder {
+  font-style: italic;
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.todo-app {
+  position: relative;
+  width: 400px;
+  padding: 30px 30px 15px;
+  background: white;
+  border: 1px solid;
+  border-color: #dfdcdc #d9d6d6 #ccc;
+  border-radius: 2px;
+  box-shadow: 0 13px 22px rgb(0 0 0 / 21%);
+  margin: 20px auto;
+  border-top: 5px solid #80092c;
+}
+
+.todo-app::before,
+.todo-app::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  height: 4px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+}
+
+.todo-app::after {
+  bottom: -3px;
+  left: 0;
+  right: 0;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.todo-app::before {
+  bottom: -5px;
+  left: 2px;
+  right: 2px;
+  border-color: #c4c4c4;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.todo-item {
+  padding: 10px 0;
+  border-top: solid 1px #ddd;
+  min-height: 30px;
+  line-height: 30px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.todo-checkbox {
+  flex-shrink: 0;
+  margin: auto 1ex auto 0;
+}
+
+.todo-title {
+  flex-grow: 1;
+  padding-left: 11px;
+}
+
+@media only screen and (max-width: 375px) {
+  .todo-app {
+    width: 80%;
+  }
+
+  .todo-input {
+    width: 60%;
+  }
+}
