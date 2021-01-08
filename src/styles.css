@@ -167,6 +167,7 @@ ul {
 .todo-title {
   flex-grow: 1;
   padding-left: 11px;
+  cursor: pointer;
 }
 
 @media only screen and (max-width: 375px) {

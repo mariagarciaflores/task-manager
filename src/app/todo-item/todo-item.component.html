@@ -1,6 +1,10 @@
 <div class="todo-item">
+
   <input [checked]="item.completed" type="checkbox" class="todo-checkbox" (click)="completeItem()">
-  <span class="todo-title" [ngClass]="{'todo-complete': item.completed}">{{item.title}}</span>
+  <span *ngIf="!isEditMode" class="todo-title" [ngClass]="{'todo-complete': item.completed}"
+    (click)="editItem()">{{item.title}}</span>
+
+  <tm-input-button *ngIf="isEditMode" [item]="item" (save)="updateTask($event)"></tm-input-button>
   <button class="btn btn-red" (click)="deleteItem()">
     X
   </button>
