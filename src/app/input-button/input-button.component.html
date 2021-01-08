@@ -1,3 +1,3 @@
 <input #inputId class="todo-input" placeholder="Añadir tarea..." [value]="title"
   (keyup.enter)="saveValue(inputId.value)">
-<button class="btn" (click)="saveValue(inputId.value)">Guardar</button>
+<button *ngIf="!item" class="btn" (click)="saveValue(inputId.value)">Guardar</button>
