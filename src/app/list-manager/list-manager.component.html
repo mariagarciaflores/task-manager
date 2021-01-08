@@ -1,0 +1,9 @@
+<div class="todo-app">
+  <tm-input-button (save)="addItem($event)"></tm-input-button>
+
+  <ul>
+    <li *ngFor="let todoItem of todoList">
+      <tm-todo-item [item]="todoItem"></tm-todo-item>
+    </li>
+  </ul>
+</div>
