@@ -46,11 +46,18 @@ ul {
 }
 
 .btn-red {
-  background: red;
+  background: transparent;
+  padding: 3px 12px;
+  color: #404040;
+  font-size: 16px;
+  outline: none;
 }
 
 .btn-red:hover {
-  background: darkred;
+  background: transparent;
+  font-weight: bold;
+  font-size: 18px;
+  color: #80092c;
 }
 
 .app-title {
@@ -170,4 +177,8 @@ ul {
   .todo-input {
     width: 60%;
   }
+}
+
+.todo-complete {
+  text-decoration: line-through;
 }

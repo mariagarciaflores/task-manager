@@ -3,7 +3,7 @@
 
   <ul>
     <li *ngFor="let todoItem of todoList">
-      <tm-todo-item [item]="todoItem"></tm-todo-item>
+      <tm-todo-item [item]="todoItem" (delete)="deleteTask($event)" (update)="updateTask($event.item, $event.changes)"></tm-todo-item>
     </li>
   </ul>
 </div>
