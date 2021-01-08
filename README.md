@@ -12,7 +12,7 @@ Al finalizar este tutorial tendrás tu propia aplicación de administrador de ta
 
 Hecha un vistazo a lo que lograrás al completar este tutorial [Demo](https://tw-task-manager.web.app).
 
-![Imagen de la aplicación](assets/todo-list-app.PNG)
+![Imagen de la aplicación](/assets/todo-list-app.PNG)(:target="_blank")
 
 En este tutorial aprenderás conceptos básicos e importantes de Angular, después te animamos a continuar desarrollando y añadiendo muchas más mejoras y características de usabilidad a tu propio administrador de tareas (dale tu toque).
 
