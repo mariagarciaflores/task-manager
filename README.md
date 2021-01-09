@@ -8,7 +8,7 @@ Este tutorial te llevará a experimentar y conocer el mundo de Angular paso a pa
 
 Durante este tutorial vamos a utilizar Angular CLI, local storage y vamos a deployar la aplicación con firebase.
 
-Al finalizar este tutorial tendrás tu propia aplicación de administrador de tareas que mostrará una lista de tareas y te permitirá añadir, completar, editar y eliminar una tarea. La lista de tareas será almacenada en el local storage del navegador de esta amnera todos los cambios que realices se mantendrán incluso cuando refresques la página (siempre que uses el mismo navegador en la misma computadora y no en modo incógnito).
+Al finalizar este tutorial tendrás tu propia aplicación de administrador de tareas que mostrará una lista de tareas y te permitirá añadir, completar, editar y eliminar una tarea. La lista de tareas será almacenada en el local storage del navegador de esta manera todos los cambios que realices se mantendrán incluso cuando refresques la página (siempre que uses el mismo navegador en la misma computadora y no en modo incógnito).
 
 Hecha un vistazo a lo que lograrás al completar este tutorial [Demo](https://tw-task-manager.web.app).
 
