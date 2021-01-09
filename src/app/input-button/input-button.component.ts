@@ -5,7 +5,10 @@ import {
   EventEmitter,
   ViewChild,
   ElementRef,
+  Input,
 } from '@angular/core';
+
+import { TodoItem } from '../interfaces/todo-item';
 
 @Component({
   selector: 'tm-input-button',
@@ -14,12 +17,15 @@ import {
 })
 export class InputButtonComponent implements OnInit {
   @ViewChild('inputId') input: ElementRef;
+  @Input() item: TodoItem;
   @Output() save: EventEmitter<string> = new EventEmitter();
   title = '';
 
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.title = this.item.title;
+  }
 
   saveValue(newTitle: string): void {
     this.save.emit(newTitle);
