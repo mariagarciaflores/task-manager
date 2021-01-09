@@ -926,7 +926,7 @@ deleteItem(item: TodoItem): void {
 }
 ```
 
-## Editar una tarea
+### Editar una tarea
 
 Ahora queremos ponerle un estado de completo a nuestras tareas y cuando el usuario marque sus tareas como completas queremos ver una linea de tachado de tareas.
 
