@@ -219,7 +219,7 @@ Cada vez que utilizamos un componente dentro una plantilla de código HTML, se c
   <tm-input-button></tm-input-button>
 ```
 
-## implements OnInit
+## Implementar OnInit
 
 Miremos el archivo input-button.component.ts.
 
@@ -235,7 +235,7 @@ export class InputButtonComponent implements OnInit {
 
 Angular CLI agrega esta implementación para recordarnos que es mejor inicializar cosas en el componente a través del método ngOnInit.
 
-## Contructor
+## Constructor
 
 Es un método que es llamado por JavaScript cuando una instancia de la clase es creada. Cualquier cosa que se encuentre dentro este método es usado para crear la instancia. Por esa razón se llama antes que el método ngOnInit.
 
