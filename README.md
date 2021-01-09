@@ -65,7 +65,7 @@ Una vez tengas instalado Angular CLI podrás crear un proyecto Angular en cualqu
 $ ng new task-manager --prefix=tm --skip-tests --verbose
 ```
 
-- ```ng new [proyect-name]``` es el comando que se utiliza en Angular CLI para que se nos genere un nuevo proyecto con Angular
+- ```ng new [project-name]``` es el comando que se utiliza en Angular CLI para que se nos genere un nuevo proyecto con Angular
 - ```--[options]``` son configuraciones añadidas al momento de crear nuestro proyecto.
   - --prefix=tm: permitira que nuestro prefijo para cada componente sea ```tm```
   - --skip-tests: para que no se generen automaticamente archivos "spect.ts" que son los archivos para escribir test, por ahora para este tutorial no nos interesa crear esos archivos.
@@ -285,7 +285,7 @@ El archivo input-button.component.html debe contener el siguiente código:
 
 ```html
 <p>
-  input-button-unit works!
+  input-button works!
   The title is: {{ title }}
 </p>
 
@@ -329,7 +329,7 @@ input-button.component.html
 
 ```html
 <p>
-  input-button-unit works!
+  input-button works!
   The title is: {{ title }}
 </p>
 
@@ -393,48 +393,726 @@ input-button.component.html
 </button>
 ```
 
-## Task Manager View
+## Construyamos nuestro admistrador de tareas
 
-- Crear lista de tareas y exlpicar *ngFor directiva
-- Explciar Directivas
+Lo primero que vamos a hacer es crear una lista de tareas por defecto. Abre el componente app.component.ts y añade la lista de tareas dentro de la clase AppComponent como una lista de objetos, a este punto cada tarea solo tendrá un título.
 
-- Crear un componente todo-item
-- @Input() explicar 
-- link https://angular.io/api/core/Input
+app.component.ts
 
-- Interfaces, qué es, crear interfaz usando ng generate interface interfaces/todo-item
+```typescript
+export class AppComponent {
+  title = 'todo-list';
+  todoList = [
+    { title: 'Prepara el ambiente de desarrollo' },
+    { title: 'Instalar Angular' },
+    { title: 'Crear componentes' },
+    { title: 'Añadir estilos' },
+    { title: 'Separar funcionalidades' },
+    { title: 'Deployar la aplicación' },
+  ];
+}
+```
 
-- @Output explicar
-- Refactorizar, crear componente padre ng n c list-manager
-- Añadir estilos
+Ahora le diremos al navegador que muestre esas tareas. Para lograr esto usaremos una **directiva** de Angular `*ngFor`. Funciona similar a los ciclos en Java. La notación `*` hace que Angular use el elemento actual como plantilla al representar la lista.
 
-**Services**
+app.component.html
 
-- crear un servicio con el comando ng generate service services/todo-list
-- Explicar decorador @Injectable
-- link https://angular.io/tutorial/toh-pt4
-- Añadir el metodo get al servicio e inyectarlo en el componente correspondiente
-- Añadir el metodo add al servicio
-- Añadir el metodo update al servicio
-- Añadir el metodo remove al servicio
+```html
+<h1>
+    Welcome to {{ title }}!
+  </h1>
 
-- Añadir remove item a la vista
-- Añadir checkbox a la vista y usar update
-- Añadir ngClass y explicar link https://angular.io/api/common/NgClass
+  <tm-input-button></tm-input-button>
 
-**Local Storage**
+  <ul>
+    <li *ngFor="let todoItem of todoList">
+      {{ todoItem.title }}
+    </li>
+  </ul>
+```
 
-- Qué es
-- Crear el servicio
-- Implementar metodos
-- Test
+Esto significa "revisar todos los elementos de la lista todoList definida en la clase e imprimir una lista que contiene los titulos de los elementos". Mientras recorremos todoList, cada elemento se asigna a la variable de la plantilla todoItem, y podemos usar esta variable dentro del elemento en el que lo definimos (en este caso el elemento li) y sus hijos.
 
-**ViewChild**
+## Directivas de Angular (Angular directives)
 
-- link https://angular.io/api/core/ViewChild
+Las directivas son piezas de lógica (escritas como clases) que se pueden adjuntar a elementos y componentes. Se utilizan para cambiar la visualización o el comportamiento del elemento. Angular viene con algunas directivas integradas.
 
-Deploy the app with firebase hosting
-- Install firebase npm install -g firebase-tools
-- login to firebase since your own app firebase login
-- Crear proyecto desde console.firebase.google.com
-- inicializar firebase comando -> firebase init
+Como vimos la directiva `ngFor` modifica la plantilla en tiempo de jecución repitiendo el elemento al que se llama y su contenido. Otra directiva es por ejemplo `ngIf`, que recibe una expresión booleana. Angular solo mostrará y representará el elemento y su contenido si la expresión es verdadera.  También necesita el prefijo `*` porque usa el elemento de destino como plantilla, similar a la directiva `ngFor`.
+
+Hay otras directivas en Angular que no son estructurales (las culaes se usan sin `*`). Por ejemplo `ngStyles` y `ngClass`, con los que se pueden aplicar estilos y clases dinamicamente al elemento. [[Documentación]](https://angular.io/api/common#directives)
+
+## Nuevo componente: todo-item
+
+Ahora vamos a crear un componente nuevo para mostrar cada una de las tareas representadas en la lista. Al inicio será un componente sencillo pero se le irá añadiendo más funcionalidad en el transcurso del tutorial. Lo importante es que se obtendrá cada item (tarea) como una entrada de su componente principal. De esta manera este componente puede ser re-usable y no depender directamente de los datos y el estado de la aplicación.
+
+Usando la terminal, crear un nuevo componente `todo-item`:
+
+```shell
+$ ng g c todo-item
+```
+
+Retornando a tu editor de texto verás que se ha creado una nueva carpeta `todo-item`, con los archivos necesarios dentro.
+
+Ahora usaremos el nuevo componente creado dentro nuestra lista:
+
+```html
+<ul>
+  <li *ngFor="let todoItem of todoList">
+    <tm-todo-item></tm-todo-item>
+  </li>
+</ul>
+```
+
+¡Revisa el navegador!
+
+## @Input
+
+Queremos mostrar el título de cada tarea dentro del componente todo-item. Para hacer esto encesitamos enviar la tarea actual dentro del ciclo al componente todo-item.
+
+Angular hace que esto sea sencillo utilizando el decorador @Input [[Documentación]](https://angular.io/api/core/Input)
+
+Dentro del archivo todo-item.component.ts, dentro de la clase TodoItemComponent añadir:
+
+```typescript
+@Input() item;
+```
+
+Esto le dice al componente que espere una entrada y se la asigne a la propiedad de la clase llamado item. Asegurese de que Input se agregue a la declaración de importación.
+
+Ahora podemos utilizar la tarea dentro de la plantilla todo-item y extraer el título de la tarea usando la interpolación ``{{item.title}}`.
+
+todo-item.component.html
+
+```html
+ <p>{{ item.title }}</p>
+```
+
+Ahora necesitamos pasar un elemento (tarea) donde usamos el componente `<tm-todo-item></tm-todo-item>`. Regresamos al componente raíz de la aplicación y pasaremos el elemento al componente todo-item.
+
+app.component.html
+
+```html
+<ul>
+  <li *ngFor="let todoItem of todoList">
+    <app-todo-item [item]="todoItem"></app-todo-item>
+  </li>
+</ul>
+```
+
+el elemento aquí entre corchete es el mismo que se ha declarado como `@Input` del componente.
+
+## Interfaz
+
+Queremos utilizar la capacidad de typeScript para saber qué tipo de objeto pasamos como elemento al componente de todo-item. Esto para segurarnos también que no se envié un objeto no deseado que no contenga la propiedad title. Nos aseguraremos de que el item sea del tipo correcto. Definiremos el tipo del item usando una iterfaz.
+
+Crearemos una interfaz llamada `todo-item` dentro de un forlder llamado `interfaces`:
+
+```shell
+$ ng g i interfaces/todo-item
+```
+
+Abre el nuevo archivo generado todo.item.ts. Ahora podemos definir las propiedades y/o métodos que cada item (tarea) debería tener. En esté punto añadiremos dos propiedades:
+
+- **title** el cual debe ser de tipo string.
+- **completed** el cual es de tipo boolean y además es una propiedad opcional
+
+```typescript
+export interface TodoItem {
+  title: string;
+  completed?: boolean;
+}
+```
+Actualicemos el elemento `@Input` para que sea del tipo que hemos creado.
+
+todo-item.component.ts
+
+```typescript
+export class TodoItemComponent implements OnInit {
+  @Input() item: TodoItem;
+```
+
+OJO: necesitamos importar la interfaz para utilizarlo:
+
+todo-item.component.ts
+
+```typescript
+import { TodoItem } from '../interfaces/todo-item';
+```
+
+Ahora, definamos la lista de elementos de tareas pendientes para contener objetos del tipo TodoItem.
+
+app.component.ts
+
+```typescript
+export class AppComponent {
+  title = 'task-manager';
+  todoList: TodoItem[] = [
+    { title: 'Prepara el ambiente de desarrollo' },
+    { title: 'Instalar Angular' },
+    { title: 'Crear componentes' },
+    { title: 'Añadir estilos' },
+    { title: 'Separar funcionalidades' },
+    { title: 'Deployar la aplicación' },
+  ];
+}
+```
+
+**Experimenta:** trata de eliminar el título a una tarea, agregale nuevas propiedades, ¿qué pasa?.
+
+## Añadir items
+
+Queremos añadir items a nuestra lista. Haremos esto desde el componente input-button que creamos anteriormente. Lo cambiaremos de tal manera que cuando el usuario introduzca algo a la caja de texto y luego presiones enter o el botón guardar, este valor se convierta en el título de una nueva tarea y además esta tarea sea agregada a nuestra lista de tareas.
+
+Pero no queremos que el componente input-button sea responsable de agregar esa nueva tarea a nuestra lista. Queremos que este componente tenga responsabilidad mínima y delegue la acción a su componente padre. Una de las ventajas de este enfoque es que este componente sea re-utilizable. Por ejemplo en este caso lo usaremos para crear una nueva tarea pero también se puede usar en un futuro para editar una tarea, el primer caso la acción guardar añadiría una tarea en cambio en el segundo caso la acción guardar editaria una tarea.
+
+entonces, lo que realmente queremos hacer es emitir un evento desde el componente input-button cada vez que se cambia el título. Y con Angular podemos hacer esto de manera sencilla.
+
+## @Output()
+
+Añadir la sigueinte línea de código dentro la clase InputButtonComponent, el cula definirá una salida para el componente:
+
+input-button.component.ts
+
+```typescript
+export class InputButtonComponent implements OnInit {
+  @Output() save: EventEmitter<string> = new EventEmitter();
+```
+
+La propiedad de salida se llama `save` y es de tipo `EventEmitter` que tiene el método `emit`. `EventEmitter` es un tipo genérico; le pasamos otro tipo que se usará internamente en este caso es una cadena (string). Es el tipo de objeto que emitirá el método `emit`.
+
+Ahora, siempre que llamemos a `this.save.emit()`, se emitirá un evento al componente padre. llamemoslo en el método changeTitle:
+
+input-button.component.ts
+
+```typescript
+changeTitle(newTitle: string) {
+  this.save.emit(newTitle);
+}
+```
+
+Pasamos newTitle cuando emitimos el evento. Todo lo que pasemos en `emit()` estará disponible para el padre como `$event`. Los eventos emitidos desde keyup.enter y click siguen llamando al mismo método, pero el método en si ha cambiado.
+
+El nombre del método ya no coincide con la acción que porporciona. Cambiemosle por algo más apropiado: saveValue.
+
+input-button.component.ts
+
+```typescript
+saveValue(newTitle: string): void {
+  this.save.emit(newTitle);
+}
+```
+
+input-button.component.html
+
+```html
+<input #inputId [value]="title" (keyup.enter)="saveValue(inputId.value)">
+<button (click)="saveValue(inputId.value)">Guardar</button>
+```
+
+## Escuchando el evento
+
+Ahora todo lo que tenemos que hacer es capturar el evento en el componente principal y adjuntarle lógica.
+
+app.component.html
+
+```html
+<tm-input-button (save)="addItem($event)"></tm-input-button>
+```
+
+Ahora todo lo que queda es implementar el método `addItem`, que recibe una cadena, crear un objeto con la cadena como la propiedad título y agregarlo a la lista.
+
+app.component.ts
+
+```typescript
+addItem(title: string): void {
+  this.todoList.push({ title });
+}
+```
+
+## Refactorizar código
+
+Vamos a realizar una pequeña refactorización. La raíz de la aplicación no debería tener una lógica ni plantilla tan grande, debería simplemente llamar a otro componente que se ocupe de eso.
+
+Crear un nuevo componente llamado `list-manager`.
+
+```shell
+$ ng g c list-manager
+```
+
+- Mueve todo el código dentro de `tm-root` a `list-manager`.
+- Se puede mantener la propiedad título en `tm-root`.
+
+app.component.html
+
+```html
+<h1>
+  Welcome to {{ title }}!
+</h1>
+```
+
+app.component.ts
+
+```typescript
+export class AppComponent {
+  title = 'TiquipayaWasi Task Manager';
+}
+```
+
+list-manager.component.html
+
+```html
+<tm-input-button (save)="addItem($event)"></tm-input-button>
+
+<ul>
+  <li *ngFor="let todoItem of todoList">
+    <tm-todo-item [item]="todoItem"></tm-todo-item>
+  </li>
+</ul>
+```
+
+list-manager.component.ts
+
+```typescript
+export class ListManagerComponent implements OnInit {
+  todoList: TodoItem[] = [
+    {title: 'install NodeJS'},
+    {title: 'install Angular CLI'},
+    {title: 'create new app'},
+    {title: 'serve app'},
+    {title: 'develop app'},
+    {title: 'deploy app'},
+  ];
+
+  constructor() {}
+
+  ngOnInit(): void {
+  }
+
+  addItem(title: string): void {
+    this.todoList.push({ title });
+  }
+}
+```
+Llame al nuevo componente desde `tm-root`:
+
+app.component.html
+
+```html
+<h1 class="app-title">{{title}}</h1>
+
+<tm-list-manager></tm-list-manager>
+```
+
+Y listo, terminamos la refactorización.
+
+## Añadiendo estilos
+
+Con Angular podemos darle estilo a los componentes de una manera que no afectará al resto de la aplicación. Sin embargo en este tutorial no nos enfocaremos demasiado en cómo manejar las clases de estilos, por lo tanto tenemos ya una sección de estilos que puedes utilizar. Angular CLI ha generado una hoja de estilo general en src/style.css copiar y pegar el en este [link](https://github.com/mariagarciaflores/task-manager/blob/master/src/styles.css) ahí.
+
+Si miramos el archivo de estilos, agregamos estilo directamente a los elementos (html, body, div, span, h1, ul, etc) que afectarán a nuestra aplciación de inmediato. También agregamos estilos usando selectores de clase css. Necesitamos agregar estos nombres de clase a los elementos relevantes:
+
+En el archivo app.component.html añadir la clase `app-title` al elemento `h1`.
+
+```html
+<h1 class="app-title">{{title}}</h1>
+
+<tm-list-manager></tm-list-manager>
+```
+
+En el archivo input-button.component.html añadir la clase ``btn`` al elemento `button` y la clase `todo-input` al elemento `input`, además añadiremos un nuevo atributo html llamado `placeholder`.
+
+```html
+<input #inputId class="todo-input" placeholder="Añadir tarea..." [value]="title"
+  (keyup.enter)="saveValue(inputId.value)">
+<button class="btn" (click)="saveValue(inputId.value)">Guardar</button>
+```
+
+En el archivo list-manager.component.html envolveremos el contenido de este componente con un elemento `<div>` y le añadiremos la clase `todo-app`.
+
+```html
+<div class="todo-app">
+  <tm-input-button (save)="addItem($event)"></tm-input-button>
+
+  <ul>
+    <li *ngFor="let todoItem of todoList">
+      <tm-todo-item [item]="todoItem"></tm-todo-item>
+    </li>
+  </ul>
+</div>
+```
+
+Para finalizar, en el archivo todo-item.component.html envolveremos el contenido con otro elemenot `<div>` y le agregaremos la clase `todo-item`.
+
+```html
+<div class="todo-item">
+  {{item.title}}
+</div>
+```
+
+## Servicios
+
+En Angular, un servicio es una clase de JavaScript que es responsable de realizar una tarea específica que necesita la aplicación. En nuestra aplicación de administración de tareas, crearemos un servicio que se encargará de guardar y administrar todas las tareas, y lo usaremos inyectándolo en los componentes.
+
+
+### Crear un servicio con Angular
+
+En la terminal ejecutar el siguiente comando:
+
+```shell
+$ ng g s services/todo-list
+```
+
+Este comando va a generar un archivo todo-list.service.ts. El servicio es una clase simple llamada TodoListService. Tiene el decorador `@Injectable()` que le permite usar Inyección de Dependencias.
+
+```typescript
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class TodoListService {
+
+  constructor() {
+  }
+}
+```
+
+Ahora podemos mover la lista de tareas de la clase ListManagerComponent a nuestro servicio.
+
+todo-list.service.ts
+
+```typescript
+private todoList: TodoItem[] = [
+  { title: 'Prepara el ambiente de desarrollo' },
+  { title: 'Instalar Angular' },
+  { title: 'Crear componentes' },
+  { title: 'Añadir estilos' },
+  { title: 'Separar funcionalidades' },
+  { title: 'Deployar la aplicación' },
+];
+```
+
+Ahora crearemos un me´todo que nos permita retornar la lista de tareas.
+
+```typescript
+import { Injectable } from '@angular/core';
+
+import { TodoItem } from '../interfaces/todo-item';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class TodoListService {
+  private todoList: TodoItem[] = [
+    { title: 'Prepara el ambiente de desarrollo' },
+    { title: 'Instalar Angular' },
+    { title: 'Crear componentes' },
+    { title: 'Añadir estilos' },
+    { title: 'Separar funcionalidades' },
+    { title: 'Deployar la aplicación' },
+  ];
+
+  constructor() {}
+
+  getTodoList(): TodoItem[] {
+    return this.todoList;
+  }
+}
+```
+
+Bien, ahora que ya tenemos nuestro servicio vamos a utilizarlo. Para eso inyectaremos nuestro servicio en los componentes que lo vayan a usar. La inyección de dependencias que maneja Angular es simple, pasamos el parámetro por el constructor, el parámetro es del tipo del servicio creado. Angular asigna la instancia a un parámetro dentro del componente y de esa manear podemos usarlo.
+
+En el archivo list-manager.component.ts añadir:
+
+```typescript
+export class ListManagerComponent implements OnInit {
+  todoList: TodoItem[];
+
+  constructor(private todoListService: TodoListService) {}
+```
+
+Asegurate que el servicio TodoListService se ha importado.
+
+Ahora añadiremos código para obtener la lista de tareas dentro del método ngOnInit.
+
+```typescript
+export class ListManagerComponent implements OnInit {
+  todoList: TodoItem[];
+
+  constructor(private todoListService: TodoListService) {}
+
+  ngOnInit(): void {
+    this.todoList = this.todoListService.getTodoList();
+  }
+```
+
+### Añadir una nueva tarea
+
+Ahora vamos a añadir un nuevo método para añadir tareas a nuestro servicio, este método se llamará ``additem``.
+
+todo-list.service.ts
+
+```typescript
+addItem(item: TodoItem): void {
+  this.todoList.push(item);
+}
+```
+
+Ahora podemos actualizar nuestro ListManagerComponent para llamar al método ``addItem`` directamente desde el servicio.
+
+```typescript
+addItem(title: string): void {
+  this.todoListService.addItem({ title });
+}
+```
+
+### Eliminar una tarea
+
+El usuario debería tener la funcionalidad de eliminar una tarea. Para eliminar una tarea vamos a añadirle un botón `x` a cada tarea.
+
+**Agregar el botón x**
+
+Primero debemos agregar el botón para eliminar a cada tarea con un evento click que llamará a un método ``deleteItem``.
+
+todo-item.component.html
+
+```html
+<div class="todo-item">
+  {{item.title}}
+  <button class="btn btn-red" (click)="deleteItem()">
+    X
+  </button>
+</div>
+```
+
+Añadir un nuevo `@Output` al componente TodoItemComponent, el cual emitirá la tarea a eliminarse a la clase ListManagerComponent cuando se presione el botón eliminar.
+
+todo-item.component.ts
+
+```typescript
+  @Output() delete: EventEmitter<TodoItem> = new EventEmitter();
+```
+
+Implementar el método deleteItem en todo-item el cual va a emitir el evento.
+
+```typescript
+deleteItem(): void {
+  this.delete.emit(this.item);
+}
+```
+Ahora que cada item puede emitir el evento delete cuando el usuario hace click al boton x, aseguremonos que el componente list-manager escuche el evento y elimine la tarea de la lista.
+
+list-manager.component.html
+
+```html
+<tm-todo-item [item]="todoItem" (delete)="deleteTask($event)"></tm-todo-item>
+```
+Ahora debemos agregar el método `deleteTask` en el componente list-manager.
+
+list-manager.component.ts
+
+```typescript
+deleteTask(item: TodoItem): void {
+  this.todoListService.deleteItem(item);
+}
+```
+
+y finalmente añadir el método `deleteItem` a nuestro todo-list.service.ts
+
+```typescript
+deleteItem(item: TodoItem): void {
+  const index = this.todoList.indexOf(item);
+  this.todoList.splice(index, 1);
+}
+```
+
+## Editar una tarea
+
+Ahora queremos ponerle un estado de completo a nuestras tareas y cuando el usuario marque sus tareas como completas queremos ver una linea de tachado de tareas.
+
+Añadamos un checkbox a nuestras tareas. Vamos al componente todo-item.component.html y agregemosle el sigueinte código justo delate del título de la tarea:
+
+```html
+<input  type="checkbox" class="todo-checkbox" (click)="completeItem()">
+```
+
+Cuando el usuario haga click en el checkbox vamos a ejecutar el método `completeItem`. Hablemos sobre qué es lo que este método debe hacer. Queremos que un estilo que tache nuestra tarea completa sea añadido al elemento que contiene el título de la tarea. De igual manera queremos que el estado `compelted` de la tarea se guarde por lo cual debemos editar la tarea y añadirle su estado. Para poder realizar esta acción vamos a emitir un evento `update` con el nuevo estado de la tarea y lo vamos a capturar en el componente padre.
+
+todo-item.component.ts
+
+```typescript
+export class TodoItemComponent implements OnInit {
+  @Input() item: TodoItem;
+  @Output() delete: EventEmitter<TodoItem> = new EventEmitter();
+  @Output() update: EventEmitter<any> = new EventEmitter();
+
+  constructor() {}
+
+  ngOnInit(): void {}
+
+  deleteItem(): void {
+    this.delete.emit(this.item);
+  }
+
+  completeItem(): void {
+    this.update.emit({
+      item: this.item,
+      changes: { completed: !this.item.completed },
+    });
+  }
+}
+```
+¿Cómo vamos a hacer que el estilo de que va a tachar una tarea completa sea añadido a nuestro titulo dinámicamente?. Angular tiene una directiva llamada `ngClass`. Esta directiva aplica o elimina una clase css basado en una expresión booleana. [[documentación]](https://angular.io/api/common/NgClass). Lo usaremos de la siguiente manera:
+
+todo-item.component.html
+
+```html
+<span class="todo-title" [ngClass]="{'todo-complete': item.completed}">
+  {{item.title}}
+</span>
+```
+
+En el código de arriba, usando la directiva `ngClass` le decimos a Angular que si el item.completed es verdadero le añada la clase `todo-complete` al elemento span que contiene el titulo de la tarea, si item.completed es falso entonces la clase `todo-complete` no será agregada al elemento span.
+
+El siguiente paso es decirle al componente padre (list-manager) qué debe hacer cuando el evento `update` es emitido. Para hacer esto debemos enlazar la acción `update` y el método de que va a actualizar nuestra tarea dentro de nuestro servicio.
+
+list-manager.component.ts
+
+```typescript
+updateTask(item: TodoItem, changes: any): void {
+  this.todoListService.updateItem(item, changes);
+}
+```
+
+Y finalmente añadiremos nuestro método `updateItem` dentro de nuestro servicio todo-list.service.ts
+
+```typescript
+updateItem(item: TodoItem, changes: any): void {
+  const index = this.todoList.indexOf(item);
+  this.todoList[index] = { ...item, ...changes };
+}
+```
+ ¡Revisa el navegador y empieza a jugar con lo que ya tenemos implementado!
+
+## Local Storage
+
+¿Qué pasa si añades tareas, las editas, las eliminas y luego actualizas el navegador?. Si, todos los cambios realizados desaparecen y la aplicación vuelve a su estado inicial. Nos gustaría guardar el estado de la lista de tareas y de nuestras tareas, idealmente la lista se debería guardar en una base de datos, pero para este tutorial implementaremos una versión simple usando el almacenamiento del navegador.
+
+**¿Qué es local storage?**
+
+Local storage es una herramienta para almacenar datos localmente. Al igual que las coockies, el local storage almacena los datos en la computadora del usuario y nos brinda una forma rápida de acceder a estos datos tanto para leerlos como para escribirlos.
+
+Primero, para usar el local storage, simplemente podemos acceder a una instancia que está expuesta a nosotros globalmente. Esto significa que podemos llamar a todos los métodos disponibles en esta interfaz simplemente usando esta instancia.
+
+Local storage almacena datos como claves y valores. Tiene dos métodos principales: `getItem` y `setItem`. Aquí tienes un ejemplo de como usarlos:
+
+```typescript
+localStorage.setItem('name', 'Angular');
+
+let name = localStorage.getItem('name');
+console.log(name);
+```
+
+Bueno, ¡ahora usemos lo aprendido!. Vamos a crear un nuevo servicio para utilizar localStorage donde seremos capaz de almacenar nuestras tareas. Creamos nuestro servicio ejecutando el siguiente comando:
+
+```shell
+$ ng g s services/storage
+```
+Ahora añadiremos los métodos para guardar datos y obtener los datos almacenados. Añadir el siguiente código a nuestro servicio storage.sertice.ts.
+
+```typescript
+getData(key: string): any {
+    return JSON.parse(localStorage.getItem(key));
+  }
+
+setData(key: string, data: any): void {
+  localStorage.setItem(key, JSON.stringify(data));
+}
+```
+Posiblemente veas algo nuevo en el código de arriba. ¿Por qué usamos `JSON.parse` y `JSON.stringify`?. local storage almacena datos de tipo cadena (string) por lo tanto para almacenar un dato convertimos el dato que queramos almacenar a una cadena y de la misma manera al obtener el dato almacenado lo convertimos a objeto para usarlo en typescript.
+
+Ahora, usaremos el servicio de local storage en nuestro servicio todo-list.service.ts para mandar a guardar nuestras tareas y manetener su estado.
+
+inyectaremos el servicio del storage a nuestro servicio todo-list de igual manera que hicimos antes inyectando el servicio todo-list al componente list-manager.
+
+todo-list.service.ts
+
+```typescript
+import { Injectable } from '@angular/core';
+
+import { TodoItem } from '../interfaces/todo-item';
+import { StorageService } from './storage.service';
+
+const TODO_LIST_KEY = 'Todo_List';
+
+const TODO_LIST = [
+  { title: 'Prepara el ambiente de desarrollo' },
+  { title: 'Instalar Angular' },
+  { title: 'Crear componentes' },
+  { title: 'Añadir estilos' },
+  { title: 'Separar funcionalidades' },
+  { title: 'Deployar la aplicación' },
+];
+
+@Injectable({
+  providedIn: 'root',
+})
+export class TodoListService {
+  private todoList: TodoItem[];
+
+  constructor(private storageService: StorageService) {
+    this.todoList = this.storageService.getData(TODO_LIST_KEY) || TODO_LIST;
+  }
+
+  getTodoList(): TodoItem[] {
+    return this.todoList;
+  }
+
+  addItem(item: TodoItem): void {
+    this.todoList.push(item);
+    this.storageService.setData(TODO_LIST_KEY, this.todoList);
+  }
+
+  updateItem(item: TodoItem, changes: any): void {
+    const index = this.todoList.indexOf(item);
+    this.todoList[index] = { ...item, ...changes };
+    this.storageService.setData(TODO_LIST_KEY, this.todoList);
+  }
+
+  deleteItem(item: TodoItem): void {
+    const index = this.todoList.indexOf(item);
+    this.todoList.splice(index, 1);
+    this.storageService.setData(TODO_LIST_KEY, this.todoList);
+  }
+}
+```
+
+Observemos el código de arriba y notaremos que:
+
+- inyectamos el servicio `StorageService` a nuestro TodoListService e importamos el mismo.
+- Convertimos la lista de datos predefinida en una constante que esta localizada fuera de la clase.
+- Creamos una constante que representa la llave con la cual manejaremos el local storage
+- En el contructo, obtenemos la lista de tareas almacenadas en el local storage y si no existiese retornamos la lista predefinida
+- En los métodos `addItem`, `updateItem` y `deleteitem` llamamos al método setItem del storageService que nos actualiza los datos en el local storage
+
+¡Listo!. ya tenemos un administrador de tareas que mantiene su estado siempre y cuando estés en la misma computadora y en el mismo navegador.
+
+## Retos
+
+Al finalizar el tutorial notarás algunos aspecto visuales que podemos corregir:
+
+- Al guardar una tarea el título de la misma se mantiene en el cuadro de texto, una mejora que podemos realizar es limpiar el cuadro de texto después que el usuario añada una nueva tarea.
+- Podemos guardar tareas vacías. Deberiamos evitar que el usuario pueda realizar esta acción.
+- Implementa la funcionalidad de editar el título de una tarea reutilizando el componente input-button que ya tenemos.
+
+## Publica la aplicación en un servicio de hosting
+
+Para publicar nuestra aplicación utilizaremos firebase. Seguiremos los siguientes pasos: [[documentación]](https://firebase.google.com/docs/hosting)
+
+- Ingresar a https://console.firebase.google.com, crear una cuenta y añadir un proyecto.
+- Instalar firebase tools con el siguiente comando `npm install -g firebase-tools`
+- Iniciar sesión con el siguiente comando `firebase login` (usa tu cuenta de google)
+- Dentro la aplicación, iniciar firebase con el comando `firebase init`
+- Al hacer esto tendrás que escoger la opción hosting, el proyecto que creamos al inicio, marcar que la aplicación es una SPA y escribir la ruta de nuestro distribuible `dist/task-manager`
+- Para generar el distribuible usamos el siguiente comando `ng build --prod`
+- Finalmente, para publicar nuestro distribuible usamos el comando `firebase deploy`

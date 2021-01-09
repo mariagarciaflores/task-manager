@@ -7,6 +7,7 @@ import {
   ElementRef,
   Input,
 } from '@angular/core';
+
 import { TodoItem } from '../interfaces/todo-item';
 
 @Component({
